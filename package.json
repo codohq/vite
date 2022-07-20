@@ -1,0 +1,36 @@
+{
+  "name": "@codohq/vite",
+  "version": "0.1.0",
+  "license": "MIT",
+  "author": "Anomalyce",
+  "files": [
+    "dist"
+  ],
+  "main": "./dist/main.cjs",
+  "module": "./dist/main.mjs",
+  "exports": {
+    ".": {
+      "import": "./dist/main.mjs",
+      "require": "./dist/main.cjs"
+    }
+  },
+  "scripts": {
+    "dev": "unbuild --stub",
+    "build": "unbuild"
+  },
+  "engines": {
+    "node": "^14.18.0 || >=16.0.0"
+  },
+  "homepage": "https://github.com/codohq/vite",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/codohq/vite"
+  },
+  "peerDependencies": {
+    "vite": "~3.0",
+    "yaml": "~2.1"
+  },
+  "devDependencies": {
+    "unbuild": "^0.7.4"
+  }
+}
