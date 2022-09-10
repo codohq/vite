@@ -15,6 +15,17 @@ const relativeToEntrypoint = (config, subpath) => {
 }
 
 /**
+ * Retrieve a relative path to the framework.
+ * 
+ * @param  object  config
+ * @param  string  subpath
+ * @return string
+ */
+const relativeToFramework = (config, subpath) => {
+  return path.relative(process.cwd(), path.join(config.codo.paths.framework, subpath))
+}
+
+/**
  * Resolve the Codo Vite plugin.
  * 
  * @param  object  codo
@@ -91,5 +102,6 @@ export const resolveCodo = (filepath) => {
     config,
     plugin: (options) => resolvePlugin(config, options),
     relativeToEntrypoint: (subpath) => relativeToEntrypoint(config, subpath),
+    relativeToFramework: (subpath) => relativeToFramework(config, subpath),
   }
 }
