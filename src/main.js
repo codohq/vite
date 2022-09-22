@@ -53,8 +53,8 @@ const resolvePlugin = (config, options) => {
 
       if (! server?.https && config?.settings?.certificates) {
         server.https = {
-          key: path.normalize(config.codo.paths.entrypoint + '/' + config.settings.certificates.key),
-          cert: path.normalize(config.codo.paths.entrypoint + '/' + config.settings.certificates.cert),
+          key: path.normalize(config.codo.paths.docker + '/' + config.settings.certificates.key),
+          cert: path.normalize(config.codo.paths.docker + '/' + config.settings.certificates.cert),
         }
       }
 
