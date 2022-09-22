@@ -26,6 +26,19 @@ const relativeToFramework = (config, subpath) => {
 }
 
 /**
+ * Retrieve a relative path to the codo project.
+ * 
+ * @param  object  config
+ * @param  string  subpath
+ * @return string
+ */
+const relativeToCodo = (config, subpath) => {
+  const base = path.dirname(config.codo.file)
+
+  return path.relative(process.cwd(), path.join(base, subpath))
+}
+
+/**
  * Resolve the Codo Vite plugin.
  * 
  * @param  object  codo
@@ -53,8 +66,8 @@ const resolvePlugin = (config, options) => {
 
       if (! server?.https && config?.settings?.certificates) {
         server.https = {
-          key: path.normalize(config.codo.paths.docker + '/' + config.settings.certificates.key),
-          cert: path.normalize(config.codo.paths.docker + '/' + config.settings.certificates.cert),
+          key: relativeToCodo(config, config.settings.certificates.key),
+          cert: relativeToCodo(config, config.settings.certificates.cert),
         }
       }
 
@@ -103,5 +116,6 @@ export const resolveCodo = (filepath) => {
     plugin: (options) => resolvePlugin(config, options),
     relativeToEntrypoint: (subpath) => relativeToEntrypoint(config, subpath),
     relativeToFramework: (subpath) => relativeToFramework(config, subpath),
+    relativeToCodo: (subpath) => relativeToCodo(config, subpath),
   }
 }
