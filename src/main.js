@@ -1,6 +1,7 @@
 import * as path from 'path'
 import colors from 'picocolors'
 import json from '../package.json'
+import { mergeConfig } from 'vite'
 import resolveConfig from './lib/resolveConfig'
 
 /**
@@ -46,6 +47,15 @@ const relativeToCodo = (config, subpath) => {
  * @return object
  */
 const resolvePlugin = (config, options) => {
+  options = mergeConfig({
+    domain: null,
+    port: 5173,
+    https: {
+      public: null,
+      private: null,
+    },
+  }, options)
+
   return {
     name: 'codo:vite',
     enforce: 'pre',
@@ -60,26 +70,32 @@ const resolvePlugin = (config, options) => {
     config (userConfig, { command, mode }) {
       let server = userConfig?.server || {}
 
-      if (! server?.host && config?.settings?.domain) {
-        server.host = config.settings.domain
+      if (options.domain) {
+        server = mergeConfig({
+          host: '0.0.0.0',
+          port: options.port,
+          strictPort: true,
+          hmr: {
+            port: options.port,
+            clientPort: options.port,
+            host: options.domain,
+          }
+        }, server)
       }
 
-      if (! server?.https && config?.settings?.certificates) {
-        server.https = {
-          key: relativeToCodo(config, config.settings.certificates.key),
-          cert: relativeToCodo(config, config.settings.certificates.cert),
-        }
+      if (options.https.public && options.https.private) {
+        server = mergeConfig({
+          https: {
+            cert: relativeToCodo(config, options.https.public),
+            key: relativeToCodo(config, options.https.private),
+          }
+        }, server)
       }
 
-      let build = userConfig?.build || {}
-
-      if (! build?.manifest) {
-        build.manifest = true
-      }
-
-      if (! build?.emptyOutDir) {
-        build.emptyOutDir = true
-      }
+      let build = mergeConfig({
+        manifest: true,
+        emptyOutDir: true,
+      }, userConfig?.build || {})
 
       return {
         ...userConfig, server, build,
