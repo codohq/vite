@@ -22,10 +22,10 @@ const resolveConfig = (filepath) => {
     codo: {
       file: fs.realpathSync(filepath),
       paths: {
-        docker:     path.join(basepath, config.codo.components.docker),
-        entrypoint: path.join(basepath, config.codo.components.entrypoint),
-        framework:  path.join(basepath, config.codo.components.framework),
-        theme:      path.join(basepath, config.codo.components.theme),
+        docker:     config?.codo?.components?.docker ? path.join(basepath, config.codo.components.docker) : null,
+        entrypoint: config?.codo?.components?.entrypoint ? path.join(basepath, config.codo.components.entrypoint) : null,
+        // framework:  config?.codo?.components?.framework ? path.join(basepath, config.codo.components.framework) : null,
+        // theme:      config?.codo?.components?.theme ? path.join(basepath, config.codo.components.theme) : null,
       },
       project: {
         name: config.settings.name,

@@ -9,9 +9,13 @@ import resolveConfig from './lib/resolveConfig'
  * 
  * @param  object  config
  * @param  string  subpath
- * @return string
+ * @return string|false
  */
 const relativeToEntrypoint = (config, subpath) => {
+  if (! config?.codo?.paths?.entrypoint) {
+    return false
+  }
+
   return path.relative(process.cwd(), path.join(config.codo.paths.entrypoint, subpath))
 }
 
@@ -20,11 +24,15 @@ const relativeToEntrypoint = (config, subpath) => {
  * 
  * @param  object  config
  * @param  string  subpath
- * @return string
+ * @return string|false
  */
-const relativeToFramework = (config, subpath) => {
-  return path.relative(process.cwd(), path.join(config.codo.paths.framework, subpath))
-}
+// const relativeToFramework = (config, subpath) => {
+//   if (! config?.codo?.paths?.framework) {
+//     return false
+//   }
+
+//   return path.relative(process.cwd(), path.join(config.codo.paths.framework, subpath))
+// }
 
 /**
  * Retrieve a relative path to the codo project.
@@ -131,7 +139,7 @@ export const resolveCodo = (filepath) => {
     config,
     plugin: (options) => resolvePlugin(config, options),
     relativeToEntrypoint: (subpath) => relativeToEntrypoint(config, subpath),
-    relativeToFramework: (subpath) => relativeToFramework(config, subpath),
+    // relativeToFramework: (subpath) => relativeToFramework(config, subpath),
     relativeToCodo: (subpath) => relativeToCodo(config, subpath),
   }
 }
