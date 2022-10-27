@@ -26,6 +26,7 @@ export default function (filepath, data, options) {
 
   return {
     config,
+    env: config.codo.environment,
     file: fs.realpathSync(filepath),
     paths: {
       docker: path.join(basepath, config.codo.docker),
