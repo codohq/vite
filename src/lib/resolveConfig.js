@@ -1,6 +1,8 @@
-import yaml from 'yaml'
 import * as fs from 'fs'
 import * as path from 'path'
+import { parseDocument } from 'yaml'
+import useVersion1 from '../Manifests/Version_1.js'
+import CertificateVariable from '../Transformers/Variables/CertificateVariable.js'
 
 /**
  * Resolve the Codo configuration file.
@@ -12,26 +14,20 @@ import * as path from 'path'
 const resolveConfig = (filepath) => {
   path.isAbsolute(filepath) || (filepath = path.join(process.cwd(), filepath))
 
-  const basepath = path.dirname(filepath)
+  const options = {
+    strict: false,
+    customTags: [CertificateVariable],
+  }
 
   const file = fs.readFileSync(filepath, 'utf8')
-  const config = yaml.parse(file)
+  const doc = parseDocument(file, options)
 
-  return {
-    ...config,
-    codo: {
-      file: fs.realpathSync(filepath),
-      paths: {
-        docker:     config?.codo?.components?.docker ? path.join(basepath, config.codo.components.docker) : null,
-        entrypoint: config?.codo?.components?.entrypoint ? path.join(basepath, config.codo.components.entrypoint) : null,
-        // framework:  config?.codo?.components?.framework ? path.join(basepath, config.codo.components.framework) : null,
-        // theme:      config?.codo?.components?.theme ? path.join(basepath, config.codo.components.theme) : null,
-      },
-      project: {
-        name: config.settings.name,
-        environment: config.settings.environment,
-      }
-    }
+  switch (doc.get('version')) {
+    case 1:
+      return useVersion1(filepath, doc.toString(), options)
+
+    default:
+      throw new Error('Invalid manifest version (valid options are "1").')
   }
 }
 

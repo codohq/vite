@@ -12,27 +12,27 @@ import resolveConfig from './lib/resolveConfig'
  * @return string|false
  */
 const relativeToEntrypoint = (config, subpath) => {
-  if (! config?.codo?.paths?.entrypoint) {
+  if (! config?.paths?.entrypoint) {
     return false
   }
 
-  return path.relative(process.cwd(), path.join(config.codo.paths.entrypoint, subpath))
+  return path.relative(process.cwd(), path.join(config.paths.entrypoint, subpath))
 }
 
 /**
- * Retrieve a relative path to the framework.
+ * Retrieve a relative path to the docker services.
  * 
  * @param  object  config
  * @param  string  subpath
  * @return string|false
  */
-// const relativeToFramework = (config, subpath) => {
-//   if (! config?.codo?.paths?.framework) {
-//     return false
-//   }
+const relativeToDocker = (config, subpath) => {
+  if (! config?.paths?.docker) {
+    return false
+  }
 
-//   return path.relative(process.cwd(), path.join(config.codo.paths.framework, subpath))
-// }
+  return path.relative(process.cwd(), path.join(config.paths.docker, subpath))
+}
 
 /**
  * Retrieve a relative path to the codo project.
@@ -42,7 +42,7 @@ const relativeToEntrypoint = (config, subpath) => {
  * @return string
  */
 const relativeToCodo = (config, subpath) => {
-  const base = path.dirname(config.codo.file)
+  const base = path.dirname(config.file)
 
   return path.relative(process.cwd(), path.join(base, subpath))
 }
@@ -107,7 +107,7 @@ const resolvePlugin = (config, options) => {
 
       return {
         ...userConfig, server, build,
-        envDir: config.codo.paths.entrypoint,
+        envDir: config.paths.entrypoint,
       }
     },
 
@@ -120,11 +120,11 @@ const resolvePlugin = (config, options) => {
     async configureServer (server) {
       server.httpServer?.once('listening', () => {
         setTimeout(() => {
-          server.config.logger.info(`\n  ${colors.red(`${colors.bold('CODO')} v${json.version}`)}  ${colors.dim(colors.bold(`${config.codo.project.name}`))}`)
+          server.config.logger.info(`\n  ${colors.red(`${colors.bold('CODO')} v${json.version}`)}  ${colors.dim(colors.bold(`${config.project.name}`))}`)
           server.config.logger.info('')
-          server.config.logger.info(`  ${colors.green('➜')}  ${colors.bold('Config')}: ${colors.cyan(config.codo.file)}`)
-          server.config.logger.info(`  ${colors.green('➜')}  ${colors.bold('Application')}: ${colors.cyan(config.codo.paths.entrypoint)}`)
-          server.config.logger.info(`  ${colors.green('➜')}  ${colors.bold('Environment')}: ${colors.cyan(config.codo.project.environment)}`)
+          server.config.logger.info(`  ${colors.green('➜')}  ${colors.bold('Config')}: ${colors.cyan(config.file)}`)
+          server.config.logger.info(`  ${colors.green('➜')}  ${colors.bold('Application')}: ${colors.cyan(config.paths.entrypoint)}`)
+          server.config.logger.info(`  ${colors.green('➜')}  ${colors.bold('Environment')}: ${colors.cyan(config.project.environment)}`)
         })
       })
     },
@@ -136,10 +136,10 @@ export const resolveCodo = (filepath) => {
   const config = resolveConfig(filepath)
 
   return {
-    config,
     plugin: (options) => resolvePlugin(config, options),
     relativeToEntrypoint: (subpath) => relativeToEntrypoint(config, subpath),
-    // relativeToFramework: (subpath) => relativeToFramework(config, subpath),
+    relativeToDocker: (subpath) => relativeToDocker(config, subpath),
     relativeToCodo: (subpath) => relativeToCodo(config, subpath),
+    ...config,
   }
 }
