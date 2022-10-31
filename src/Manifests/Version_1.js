@@ -2,8 +2,18 @@ import * as fs from 'fs'
 import * as path from 'path'
 import { parse } from 'yaml'
 
-const environmentVariables = (envVariables) => {
+const environmentVariables = (globalVariables, envVariables) => {
   let variables = {}
+
+  Object.entries(globalVariables).forEach(([name, value]) => {
+    if (value.handle && typeof value.handle === 'function') {
+      variables = { ...variables, ...value.handle(name) }
+      return
+    }
+
+    variables[name] = value
+    return
+  })
 
   Object.entries(envVariables).forEach(([name, value]) => {
     if (value.handle && typeof value.handle === 'function') {
@@ -36,7 +46,7 @@ export default function (filepath, data, options) {
       ...environment,
       name: config.codo.name,
       environment: config.codo.environment,
-      environmentVariables: environmentVariables(environment.environment),
+      environmentVariables: environmentVariables(config.codo.variables, environment.variables),
     },
   }
 }
