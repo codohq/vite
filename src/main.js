@@ -94,8 +94,8 @@ const resolvePlugin = (config, options) => {
       if (options.https.public && options.https.private) {
         server = mergeConfig({
           https: {
-            cert: relativeToCodo(config, options.https.public),
-            key: relativeToCodo(config, options.https.private),
+            cert: options.https.public,
+            key: options.https.private,
           }
         }, server)
       }
